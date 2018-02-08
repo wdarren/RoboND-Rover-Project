@@ -10,14 +10,54 @@ def decision_step(Rover):
     # improve on this decision tree to do a good job of navigating autonomously!
 
     # Example:
-    # Check if we have vision data to make decisions with
+    # Check if we have vision data to make decisions with 
+
+
     if Rover.nav_angles is not None:
+        
+
+        if Rover.mode == 'rock_pickup':
+            # Rover.steer = np.clip(np.mean(Rover.nav_angles * 180/np.pi), -15, 15)
+            Rover.steer = Rover.samples_ang * 180/np.pi
+            if Rover.vel > 1:
+                Rover.brake = 1
+            elif Rover.vel < 0.1:
+                if Rover.stuck_interval == -1.0:
+                    Rover.stuck_time = Rover.total_time
+                    Rover.stuck_interval = 0.0
+                else:
+                    Rover.stuck_interval += (Rover.total_time - Rover.stuck_time)
+                    Rover.stuck_time = Rover.total_time
+                    if Rover.stuck_interval > 5:
+                        Rover.throttle = 0
+                        Rover.steer = np.sign(Rover.steer)*-15
+                        Rover.stuck_interval = -1.0
+            else:
+                Rover.brake = 0
+                Rover.throttle = 0.1
+            if Rover.near_sample == 1:
+                Rover.throttle = 0
+                Rover.brake = 10
+                Rover.send_pickup = True
+                Rover.mode = 'forward'
         # Check for Rover.mode status
-        if Rover.mode == 'forward': 
+        elif Rover.mode == 'forward': 
+            if Rover.vel < 0.1:
+                if Rover.stuck_interval == -1.0:
+                    Rover.stuck_time = Rover.total_time
+                    Rover.stuck_interval = 0.0
+                else:
+                    Rover.stuck_interval += (Rover.total_time - Rover.stuck_time)
+                    Rover.stuck_time = Rover.total_time
+                    if Rover.stuck_interval > 5:
+                        Rover.mode = 'stuck'
+                        Rover.stuck_interval = -1.0
             # Check the extent of navigable terrain
             if len(Rover.nav_angles) >= Rover.stop_forward:  
                 # If mode is forward, navigable terrain looks good 
                 # and velocity is below max, then throttle 
+
+
                 if Rover.vel < Rover.max_vel:
                     # Set throttle value to throttle setting
                     Rover.throttle = Rover.throttle_set
@@ -60,16 +100,27 @@ def decision_step(Rover):
                     # Set steer to mean angle
                     Rover.steer = np.clip(np.mean(Rover.nav_angles * 180/np.pi), -15, 15)
                     Rover.mode = 'forward'
+        elif Rover.mode == 'stuck':
+            Rover.throttle = 0
+            Rover.brake =0
+            if Rover.steer == 0:
+                Rover.steer = -15
+            else:
+                Rover.steer = np.sign(Rover.steer)*15
+            Rover.mode = 'forward'
+
     # Just to make the rover do something 
     # even if no modifications have been made to the code
     else:
-        Rover.throttle = Rover.throttle_set
-        Rover.steer = 0
+        Rover.throttle = 0
+        Rover.steer = -15
         Rover.brake = 0
         
     # If in a state where want to pickup a rock send pickup command
-    if Rover.near_sample and Rover.vel == 0 and not Rover.picking_up:
-        Rover.send_pickup = True
+    
+    #if Rover.near_sample and Rover.vel == 0 and not Rover.picking_up:
+    #    Rover.send_pickup = True
+    #    Rover.mode = 'forward'
     
     return Rover
 

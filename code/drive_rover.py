@@ -71,6 +71,10 @@ class RoverState():
         # obstacles and rock samples
         self.worldmap = np.zeros((200, 200, 3), dtype=np.float) 
         self.samples_pos = None # To store the actual sample positions
+        self.samples_dist = 0
+        self.samples_ang =0
+        self.stuck_time = 0
+        self.stuck_interval = -1.0
         self.samples_to_find = 0 # To store the initial count of samples
         self.samples_located = 0 # To store number of samples located on map
         self.samples_collected = 0 # To count the number of samples collected
@@ -122,7 +126,7 @@ def telemetry(sid, data):
             # back in respose to the current telemetry data.
 
             # If in a state where want to pickup a rock send pickup command
-            if Rover.send_pickup and not Rover.picking_up:
+            if Rover.send_pickup: #and not Rover.picking_up
                 send_pickup()
                 # Reset Rover flags
                 Rover.send_pickup = False
