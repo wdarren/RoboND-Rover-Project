@@ -1,14 +1,25 @@
-## Project: Search and Sample Return
-### Writeup Template: You can use this file as a template for your writeup if you want to submit it as a markdown file, but feel free to use some other method and submit a pdf if you prefer.
+# Project: Search and Sample Return
 
----
+This writeup the process of, based on the structure provided [(refer to the project README.md)](README.md), modifying perception and decision procedures to make the rover navigate and pick up rocks autonomously. The following steps have been done.
 
+* ## [Try the simulator and Jupyter Notebook](try-the-simulator-and-jupyter-notebook)
+  - Run the simulator  
+  - Test out the functions in the Jupyter Notebook
+----
+____
 
-**The goals / steps of this project are the following:**  
+## Try the simulator and Jupyter Notebook
 
-**Training / Calibration**  
+### Run the simulator
 
-* Download the simulator and take data in "Training Mode"
+- Download the simulator and take data in "Training Mode"
+
+### Test out the functions in the Jupyter Notebook  
+Inside the Jupyter Notebook, there are functions used for perception part of codes of the autonomous rover. They can be used for testing how the functions work.
+
+- **Perspective view to world coordinates and rove steering angle**  
+In order the generate rover's steering angle from the images from rover's camera, we use `perspective_transform()` to 
+
 * Test out the functions in the Jupyter Notebook provided
 * Add functions to detect obstacles and samples of interest (golden rocks)
 * Fill in the `process_image()` function with the appropriate image processing steps (perspective transform, color threshold etc.) to get from raw images to a map.  The `output_image` you create in this step should demonstrate that your mapping pipeline works.
