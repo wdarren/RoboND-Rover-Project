@@ -4,10 +4,10 @@
 
 This writeup the process of, based on the structure provided [(refer to the project README.md)](README.md), modifying perception and decision procedures to make the rover navigate and pick up rocks autonomously. The following steps have been done.
 
-* ## [Try the Simulator and Jupyter Notebook](try-the-simulator-and-jupyter-notebook)
+* ## [Try the Simulator and Jupyter Notebook](#try-the-simulator-and-jupyter-notebook)
   - Run the simulator  
   - Test out the functions in the Jupyter Notebook
-* ## [Autonomous Navigation and Mapping](autonomous-navigation-and-mapping)
+* ## [Autonomous Navigation and Mapping](#autonomous-navigation-and-mapping)
 ----
 
 ## Try the Simulator and Jupyter Notebook
@@ -27,15 +27,29 @@ In order the generate rover's steering angle from the images from rover's camera
   
   Use `pix_to_world()`, for transfrom pixels in rover coordinates to world coordinates for later mapping pixels to world map.  
 
-- **To find the rocks**
+- **To find the rocks**  
   To identify the target rocks, use the same technique in `color_thresh()`, but with different threshold parameters. That is `find_rocks`, of which the result as follows  
   <img src="./misc/find_rock.png" width="400">  
 
-- **Generate the video**
+- **Generate the video**  
   Use the data gathered from simulator training mode and generate the video file required
   
 ## Autonomous Navigation and Mapping
+I use the basic solution from [Project Walkthrough Video](https://www.youtube.com/watch?v=oJA6QHDPdQw), and do the following modifications
 
+- **Fedelity improvement**  
+After perspective transformation, the pixels at large distance are not accurate, which affect the fedelity as a result. By simple using only pixels at a certain distance, we can increase the fedelity.   
+
+Use only the center area (black out other area). Compareed with calculating the distance, the following codes is not a fancy, but is easy and does the job well(~80% fedelity).
+'''
+    color_select[0:60,:] = 0
+    color_select[:,0:110] = 0
+    color_select[:,190:] = 0
+'''
+
+- **`stuck` mode**
+
+- **`rock_pickup` mode**
 
 **Autonomous Navigation / Mapping**
 
