@@ -53,7 +53,7 @@ class RoverState():
         self.nav_dists = None # Distances of navigable terrain pixels
         self.ground_truth = ground_truth_3d # Ground truth worldmap
         self.mode = 'forward' # Current mode (can be forward or stop)
-        self.throttle_set = 0.2 # Throttle setting when accelerating
+        self.throttle_set = 0.3 # Throttle setting when accelerating
         self.brake_set = 10 # Brake setting when braking
         # The stop_forward and go_forward fields below represent total count
         # of navigable terrain pixels.  This is a very crude form of knowing
@@ -74,6 +74,8 @@ class RoverState():
         self.samples_dist = 0
         self.samples_ang =0
         self.stuck_time = 0
+        self.recover_state = 'forward'
+        self.ori_steer = 0
         self.stuck_interval = -1.0
         self.samples_to_find = 0 # To store the initial count of samples
         self.samples_located = 0 # To store number of samples located on map

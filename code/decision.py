@@ -15,33 +15,19 @@ def decision_step(Rover):
 
     if Rover.nav_angles is not None:
         
-
         if Rover.mode == 'rock_pickup':
             # Rover.steer = np.clip(np.mean(Rover.nav_angles * 180/np.pi), -15, 15)
             Rover.steer = Rover.samples_ang * 180/np.pi
-            if Rover.vel > 1:
-                Rover.brake = 1
-            elif Rover.vel < 0.1:
-                if Rover.stuck_interval == -1.0:
-                    Rover.stuck_time = Rover.total_time
-                    Rover.stuck_interval = 0.0
-                else:
-                    Rover.stuck_interval += (Rover.total_time - Rover.stuck_time)
-                    Rover.stuck_time = Rover.total_time
-                    if Rover.stuck_interval > 5:
-                        Rover.throttle = 0
-                        Rover.steer = np.sign(Rover.steer)*-15
-                        Rover.stuck_interval = -1.0
-            else:
-                Rover.brake = 0
-                Rover.throttle = 0.1
+            Rover.throttle = 0.2
+            Rover.brake = 0
             if Rover.near_sample == 1:
                 Rover.throttle = 0
                 Rover.brake = 10
                 Rover.send_pickup = True
                 Rover.mode = 'forward'
-        # Check for Rover.mode status
-        elif Rover.mode == 'forward': 
+            else:
+                if Rover.vel > 1:
+                    Rover.throttle = 0
             if Rover.vel < 0.1:
                 if Rover.stuck_interval == -1.0:
                     Rover.stuck_time = Rover.total_time
@@ -50,14 +36,34 @@ def decision_step(Rover):
                     Rover.stuck_interval += (Rover.total_time - Rover.stuck_time)
                     Rover.stuck_time = Rover.total_time
                     if Rover.stuck_interval > 5:
+                        Rover.recover_state = 'rock_pickup'
+                        Rover.ori_steer = Rover.steer
                         Rover.mode = 'stuck'
                         Rover.stuck_interval = -1.0
+            else:
+                Rover.stuck_interval = -1.0
+
+
+        # Check for Rover.mode status
+        elif Rover.mode == 'forward': 
+            if Rover.vel < 0.1 and Rover.picking_up == 0:
+                if Rover.stuck_interval == -1.0:
+                    Rover.stuck_time = Rover.total_time
+                    Rover.stuck_interval = 0.0
+                else:
+                    Rover.stuck_interval += (Rover.total_time - Rover.stuck_time)
+                    Rover.stuck_time = Rover.total_time
+                    if Rover.stuck_interval > 5:
+                        Rover.mode = 'stuck'
+                        Rover.recover_state = 'forward'
+                        Rover.ori_steer = Rover.steer
+                        Rover.stuck_interval = -1.0
+            else:
+                Rover.stuck_interval = -1.0
             # Check the extent of navigable terrain
             if len(Rover.nav_angles) >= Rover.stop_forward:  
                 # If mode is forward, navigable terrain looks good 
                 # and velocity is below max, then throttle 
-
-
                 if Rover.vel < Rover.max_vel:
                     # Set throttle value to throttle setting
                     Rover.throttle = Rover.throttle_set
@@ -72,7 +78,7 @@ def decision_step(Rover):
                     Rover.throttle = 0
                     # Set brake to stored brake value
                     Rover.brake = Rover.brake_set
-                    Rover.steer = 0
+                    Rover.ori_steer = Rover.steer
                     Rover.mode = 'stop'
 
         # If we're already in "stop" mode then make different decisions
@@ -90,7 +96,10 @@ def decision_step(Rover):
                     # Release the brake to allow turning
                     Rover.brake = 0
                     # Turn range is +/- 15 degrees, when stopped the next line will induce 4-wheel turning
-                    Rover.steer = -15 # Could be more clever here about which way to turn
+                    if Rover.ori_steer == 0:
+                        Rover.steer = -15
+                    else:
+                        Rover.steer = -np.sign(Rover.ori_steer)*15 # Could be more clever here about which way to turn
                 # If we're stopped but see sufficient navigable terrain in front then go!
                 if len(Rover.nav_angles) >= Rover.go_forward:
                     # Set throttle back to stored value
@@ -101,13 +110,15 @@ def decision_step(Rover):
                     Rover.steer = np.clip(np.mean(Rover.nav_angles * 180/np.pi), -15, 15)
                     Rover.mode = 'forward'
         elif Rover.mode == 'stuck':
-            Rover.throttle = 0
             Rover.brake =0
-            if Rover.steer == 0:
-                Rover.steer = -15
+            if Rover.vel < -0.5:
+                Rover.mode = Rover.recover_state
             else:
-                Rover.steer = np.sign(Rover.steer)*15
-            Rover.mode = 'forward'
+                Rover.throttle = -1
+                if Rover.ori_steer == 0:
+                    Rover.steer = -15
+                else:
+                    Rover.steer = -np.sign(Rover.ori_steer)*15
 
     # Just to make the rover do something 
     # even if no modifications have been made to the code
@@ -121,6 +132,5 @@ def decision_step(Rover):
     #if Rover.near_sample and Rover.vel == 0 and not Rover.picking_up:
     #    Rover.send_pickup = True
     #    Rover.mode = 'forward'
-    
     return Rover
 
