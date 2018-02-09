@@ -1,14 +1,16 @@
 # Project: Search and Sample Return
 
+<img src="./misc/rover_autonomous.png" width="500">
+
 This writeup the process of, based on the structure provided [(refer to the project README.md)](README.md), modifying perception and decision procedures to make the rover navigate and pick up rocks autonomously. The following steps have been done.
 
-* ## [Try the simulator and Jupyter Notebook](try-the-simulator-and-jupyter-notebook)
+* ## [Try the Simulator and Jupyter Notebook](try-the-simulator-and-jupyter-notebook)
   - Run the simulator  
   - Test out the functions in the Jupyter Notebook
+* ## [Autonomous Navigation and Mapping](autonomous-navigation-and-mapping)
 ----
-____
 
-## Try the simulator and Jupyter Notebook
+## Try the Simulator and Jupyter Notebook
 
 ### Run the simulator
 
@@ -18,12 +20,22 @@ ____
 Inside the Jupyter Notebook, there are functions used for perception part of codes of the autonomous rover. They can be used for testing how the functions work.
 
 - **Perspective view to world coordinates and rove steering angle**  
-In order the generate rover's steering angle from the images from rover's camera, we use `perspective_transform()` to 
+In order the generate rover's steering angle from the images from rover's camera, we use `perspective_transform()` to firstly change the view to top view image, and then apply `color_thresh()` to identify the navigable terrain.  
+  
+  To obtain rover's steering angle, apply `rover_coords()` and `to_polar_coords()` respectively to get the angles of all navigable pixels and use the mean of them as steering angle.  
+      <img src="./misc/perspective_angle.png" width="400">
+  
+  Use `pix_to_world()`, for transfrom pixels in rover coordinates to world coordinates for later mapping pixels to world map.  
 
-* Test out the functions in the Jupyter Notebook provided
-* Add functions to detect obstacles and samples of interest (golden rocks)
-* Fill in the `process_image()` function with the appropriate image processing steps (perspective transform, color threshold etc.) to get from raw images to a map.  The `output_image` you create in this step should demonstrate that your mapping pipeline works.
-* Use `moviepy` to process the images in your saved dataset with the `process_image()` function.  Include the video you produce as part of your submission.
+- **To find the rocks**
+  To identify the target rocks, use the same technique in `color_thresh()`, but with different threshold parameters. That is `find_rocks`, of which the result as follows  
+  <img src="./misc/find_rock.png" width="400">  
+
+- **Generate the video**
+  Use the data gathered from simulator training mode and generate the video file required
+  
+## Autonomous Navigation and Mapping
+
 
 **Autonomous Navigation / Mapping**
 
