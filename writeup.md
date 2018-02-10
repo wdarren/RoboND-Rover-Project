@@ -13,7 +13,7 @@ This writeup decribe the process of, based on the structure provided [(refer to 
   - `stuck` mode
   - Steering angle in `stop` and `stuck` modes
 * ## [The Result](#the-result)
-* ## [Known Problems and Possible Future Improvements]
+* ## [Known Problems and Possible Future Improvements](#known-problems-and-possible-future-improvements)
   - Target rock behind the scatter rocks
   - Navigated terrain
   - After pick-up, turn left or right]
