@@ -167,8 +167,8 @@ def perception_step(Rover):
         rock_ycen = int(np.mean(rock_y_world))
         Rover.samples_dist = rock_dist[rock_idx]
         Rover.samples_ang = rock_ang[rock_idx]
+        # Rock found, switch to rock_pickup mode
         Rover.mode='rock_pickup'
-        # Rover.nav_angles = rock_ang
         Rover.worldmap[rock_ycen, rock_xcen, 1] =255
         Rover.vision_image[:,:,1] = rock_map * 255
     else:

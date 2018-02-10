@@ -5,29 +5,24 @@ import numpy as np
 # commands based on the output of the perception_step() function
 def decision_step(Rover):
 
-    # Implement conditionals to decide what to do given perception data
-    # Here you're all set up with some basic functionality but you'll need to
-    # improve on this decision tree to do a good job of navigating autonomously!
-
-    # Example:
-    # Check if we have vision data to make decisions with 
-
-
     if Rover.nav_angles is not None:
-        
+        # To pick up the rock found
         if Rover.mode == 'rock_pickup':
-            # Rover.steer = np.clip(np.mean(Rover.nav_angles * 180/np.pi), -15, 15)
             Rover.steer = Rover.samples_ang * 180/np.pi
             Rover.throttle = 0.2
             Rover.brake = 0
+            # Check if the rock is near enough to pick up the rock
             if Rover.near_sample == 1:
                 Rover.throttle = 0
                 Rover.brake = 10
+                # Send pick-up command
                 Rover.send_pickup = True
                 Rover.mode = 'forward'
+            # Vel < 1 for better approaching
             else:
                 if Rover.vel > 1:
                     Rover.throttle = 0
+            # Check if the rover is stuck
             if Rover.vel < 0.1:
                 if Rover.stuck_interval == -1.0:
                     Rover.stuck_time = Rover.total_time
@@ -36,6 +31,7 @@ def decision_step(Rover):
                     Rover.stuck_interval += (Rover.total_time - Rover.stuck_time)
                     Rover.stuck_time = Rover.total_time
                     if Rover.stuck_interval > 5:
+                        # Record current state for coming back to the same mode
                         Rover.recover_state = 'rock_pickup'
                         Rover.ori_steer = Rover.steer
                         Rover.mode = 'stuck'
@@ -46,6 +42,7 @@ def decision_step(Rover):
 
         # Check for Rover.mode status
         elif Rover.mode == 'forward': 
+            # Check whether the rover is stuck
             if Rover.vel < 0.1 and Rover.picking_up == 0:
                 if Rover.stuck_interval == -1.0:
                     Rover.stuck_time = Rover.total_time
@@ -55,6 +52,7 @@ def decision_step(Rover):
                     Rover.stuck_time = Rover.total_time
                     if Rover.stuck_interval > 5:
                         Rover.mode = 'stuck'
+                        # Record current state for coming back to the same mode
                         Rover.recover_state = 'forward'
                         Rover.ori_steer = Rover.steer
                         Rover.stuck_interval = -1.0
@@ -109,15 +107,19 @@ def decision_step(Rover):
                     # Set steer to mean angle
                     Rover.steer = np.clip(np.mean(Rover.nav_angles * 180/np.pi), -15, 15)
                     Rover.mode = 'forward'
+        # Stuck mode
         elif Rover.mode == 'stuck':
             Rover.brake =0
+            # If backward vel enough, go back to original mode 
             if Rover.vel < -0.5:
                 Rover.mode = Rover.recover_state
             else:
+                # Move the rover backwards
                 Rover.throttle = -1
                 if Rover.ori_steer == 0:
                     Rover.steer = -15
                 else:
+                    # Turn the rover in opposite direction
                     Rover.steer = -np.sign(Rover.ori_steer)*15
 
     # Just to make the rover do something 

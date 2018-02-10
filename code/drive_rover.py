@@ -71,12 +71,12 @@ class RoverState():
         # obstacles and rock samples
         self.worldmap = np.zeros((200, 200, 3), dtype=np.float) 
         self.samples_pos = None # To store the actual sample positions
-        self.samples_dist = 0
-        self.samples_ang =0
-        self.stuck_time = 0
-        self.recover_state = 'forward'
-        self.ori_steer = 0
-        self.stuck_interval = -1.0
+        self.samples_dist = 0 # To store the sample distance
+        self.samples_ang =0 # To store the sample angle
+        self.stuck_time = 0 # To caculate the stuck time
+        self.recover_state = 'forward' # To store the original mode before entering stuck mode
+        self.ori_steer = 0 # To store the original steer angle before entering stuck mode
+        self.stuck_interval = -1.0 # If interval = -1, recaculate stuck time
         self.samples_to_find = 0 # To store the initial count of samples
         self.samples_located = 0 # To store number of samples located on map
         self.samples_collected = 0 # To count the number of samples collected
