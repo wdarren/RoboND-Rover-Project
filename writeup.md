@@ -2,7 +2,7 @@
 
 <img src="./misc/rover_autonomous.png" width="500">
 
-This writeup decribe the process of, based on the structure provided [(refer to the project README.md)](README.md), modifying perception and decision procedures to make the rover navigate and pick up rocks autonomously. The following steps have been done.
+This writeup decribes the process of, based on the structure provided [(refer to the project README.md)](README.md), modifying perception and decision procedures to make the rover navigate and pick up rocks autonomously. The following steps have been done.
 
 * ## [Try the Simulator and Jupyter Notebook](#try-the-simulator-and-jupyter-notebook)
   - Run the simulator  
